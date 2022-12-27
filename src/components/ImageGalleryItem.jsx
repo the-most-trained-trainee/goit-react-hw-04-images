@@ -12,7 +12,7 @@ const GalleryItem = ({ image, fullImage }) => {
       <li className="ImageGalleryItem" onClick={toggleModal}>
         <img src={image} alt="" className="ImageGalleryItem-image" />
       </li>
-      {isModalOpen && <Modal fullImage={fullImage} close={toggleModal} />}
+      {/* {isModalOpen && <Modal fullImage={fullImage} close={toggleModal} />} */}
     </>
   );
 };

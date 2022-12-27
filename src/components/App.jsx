@@ -23,16 +23,6 @@ const App = () => {
     }
   }, [pageNo]);
 
-  // Search Submit
-  useEffect(() => {
-    if (search) {
-      setIsLoading(loading => !loading);
-      setPageNo(1);
-      setGallery([]);
-      getGallery();
-    }
-  }, [search]);
-
   // Load More Button
   useEffect(() => {
     if (pageNo !== 1) {
@@ -75,6 +65,16 @@ const App = () => {
     setIsLoading(loading => !loading);
   };
 
+  // Search Submit
+  useEffect(() => {
+    if (search) {
+      setIsLoading(loading => !loading);
+      setPageNo(1);
+      setGallery([]);
+      getGallery();
+    }
+  }, [search]);
+
   return (
     <div className="App">
       <Searchbar onSubmit={searchSubmit} />
@@ -83,7 +83,6 @@ const App = () => {
         <Loader loading={isLoading} />
       </div>
       {isLoadmore && <Button onClick={loadMore} />}
-      {/* {<Button onClick={loadMore} />} */}
     </div>
   );
 };
