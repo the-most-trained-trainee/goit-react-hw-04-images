@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import ImmageGallery from './ImageGallery';
 import Searchbar from './Searchbar';
 import Button from './Button';
@@ -7,54 +7,63 @@ import getPhotos from './serverRequest';
 import { animateScroll as scroll } from 'react-scroll';
 import '../styles.css';
 
-class App extends React.Component {
-  state = { search: '', pageNo: 1, gallery: [], isLoading: false };
+const App = () => {
+  const [search, setSearch] = useState('');
+  const [pageNo, setPageNo] = useState(1);
+  const [gallery, setGallery] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadmore, setIsLoadmore] = useState(false);
+  const [totalHits, setTotalHits] = useState(0);
 
-  async componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.state.pageNo > 1) {
+  useEffect(() => {
+    if (pageNo > 1) {
       scroll.scrollMore(600);
-    } else if (this.state.pageNo === 1) {
+    } else if (pageNo === 1) {
       scroll.scrollMore(10);
     }
-    // seacthSubmit
-    if (this.state.search !== prevState.search) {
-      this.setState(
-        prevState => ({
-          isLoading: !prevState.isLoading,
-          pageNo: 1,
-          gallery: [],
-        }),
-        () => this.getGallery()
-      );
+  }, [pageNo]);
+
+  // Search Submit
+  useEffect(() => {
+    if (search) {
+      setIsLoading(loading => !loading);
+      setPageNo(1);
+      setGallery([]);
+      getGallery();
     }
-    // loadMore
-    if (this.state.pageNo !== 1 && this.state.pageNo - prevState.pageNo === 1) {
-      this.setState(
-        prev => ({ isLoading: !prev.isLoading }),
-        () => this.getGallery()
-      );
+  }, [search]);
+
+  // Load More Button
+  useEffect(() => {
+    if (pageNo !== 1) {
+      setIsLoading(loading => !loading);
+      getGallery();
     }
-  }
+  }, [pageNo]);
 
-  searchSubmit = request => this.setState({ search: request });
+  // Load More Shown
+  useEffect(() => {
+    if (totalHits - pageNo * 12 > 0 && isLoading === false) {
+      setIsLoadmore(true);
+    } else {
+      setIsLoadmore(false);
+    }
+  }, [isLoading]);
 
-  loadMore = () =>
-    this.setState(prevState => ({ pageNo: prevState.pageNo + 1 }));
+  const searchSubmit = request => setSearch(request);
 
-  totalHits = 1;
+  const loadMore = () => setPageNo(page => page + 1);
 
-  getGallery = async () => {
-    const { search, pageNo } = this.state;
+  const getGallery = async () => {
     const galleryReceived = await getPhotos(search, pageNo);
 
     if (galleryReceived.totalHits === 0) {
-      this.setState(prev => ({ isLoading: !prev.isLoading }));
-      this.totalHits = 1;
+      setIsLoading(loading => !loading);
+      setTotalHits(0);
       alert('Sorry, but no results found :(');
       return;
     }
-
-    this.totalHits = galleryReceived.totalHits;
+    setTotalHits(galleryReceived.totalHits);
 
     const resultingHits = galleryReceived.hits.map(x => ({
       largeImageURL: x.largeImageURL,
@@ -62,33 +71,21 @@ class App extends React.Component {
       webformatURL: x.webformatURL,
     }));
 
-    this.setState(prevState => {
-      return {
-        gallery: prevState.gallery.concat(resultingHits),
-        isLoading: !prevState.isLoading,
-      };
-    });
+    setGallery(gallery => gallery.concat(resultingHits));
+    setIsLoading(loading => !loading);
   };
 
-  render() {
-    const { pageNo, gallery, isLoading } = this.state;
-
-    let loaderShown = false;
-    this.totalHits - pageNo * 12 > 11 && !isLoading
-      ? (loaderShown = true)
-      : (loaderShown = false);
-
-    return (
-      <div className="App">
-        <Searchbar onSubmit={this.searchSubmit} />
-        {gallery.length > 0 && <ImmageGallery pics={gallery} />}
-        <div className="loading">
-          <Loader loading={isLoading} />
-        </div>
-        {loaderShown && <Button onClick={this.loadMore} />}
+  return (
+    <div className="App">
+      <Searchbar onSubmit={searchSubmit} />
+      {gallery.length > 0 && <ImmageGallery pics={gallery} />}
+      <div className="loading">
+        <Loader loading={isLoading} />
       </div>
-    );
-  }
-}
+      {isLoadmore && <Button onClick={loadMore} />}
+      {/* {<Button onClick={loadMore} />} */}
+    </div>
+  );
+};
 
 export default App;

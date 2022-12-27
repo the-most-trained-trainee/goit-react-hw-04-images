@@ -1,37 +1,25 @@
-import React from 'react';
+import { useState } from 'react';
 import Modal from './Modal';
 import PropTypes from 'prop-types';
 
-class GalleryItem extends React.Component {
-  state = {
-    isModalOpen: false,
-  };
+const GalleryItem = ({ image, fullImage }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  static propTypes = {
-    image: PropTypes.string.isRequired,
-    fullImage: PropTypes.string.isRequired,
-  };
+  const toggleModal = () => setIsModalOpen(open => !open);
 
-  toggleModal = () => {
-    this.setState(prevState => ({ isModalOpen: !prevState.isModalOpen }));
-  };
+  return (
+    <>
+      <li className="ImageGalleryItem" onClick={toggleModal}>
+        <img src={image} alt="" className="ImageGalleryItem-image" />
+      </li>
+      {isModalOpen && <Modal fullImage={fullImage} close={toggleModal} />}
+    </>
+  );
+};
 
-  render() {
-    return (
-      <>
-        <li className="ImageGalleryItem" onClick={this.toggleModal}>
-          <img
-            src={this.props.image}
-            alt=""
-            className="ImageGalleryItem-image"
-          />
-        </li>
-        {this.state.isModalOpen && (
-          <Modal fullImage={this.props.fullImage} close={this.toggleModal} />
-        )}
-      </>
-    );
-  }
-}
+GalleryItem.propTypes = {
+  image: PropTypes.string.isRequired,
+  fullImage: PropTypes.string.isRequired,
+};
 
 export default GalleryItem;
