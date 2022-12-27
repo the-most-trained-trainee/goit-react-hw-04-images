@@ -29,6 +29,7 @@ const App = () => {
       setIsLoading(loading => !loading);
       getGallery();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNo]);
 
   // Load More Shown
@@ -38,6 +39,7 @@ const App = () => {
     } else {
       setIsLoadmore(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
   const searchSubmit = request => setSearch(request);
@@ -73,6 +75,7 @@ const App = () => {
       setGallery([]);
       getGallery();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   return (
