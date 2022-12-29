@@ -21,15 +21,11 @@ const App = () => {
     } else if (pageNo === 1) {
       scroll.scrollMore(10);
     }
-  }, [pageNo]);
-
-  // Load More Button
-  useEffect(() => {
+    // Load More Button
     if (pageNo !== 1) {
       setIsLoading(loading => !loading);
       getGallery();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNo]);
 
   // Load More Shown
@@ -39,8 +35,17 @@ const App = () => {
     } else {
       setIsLoadmore(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
+
+  // Search Submit
+  useEffect(() => {
+    if (search) {
+      setIsLoading(loading => !loading);
+      setPageNo(1);
+      setGallery([]);
+      getGallery();
+    }
+  }, [search]);
 
   const searchSubmit = request => setSearch(request);
 
@@ -66,17 +71,6 @@ const App = () => {
     setGallery(gallery => gallery.concat(resultingHits));
     setIsLoading(loading => !loading);
   };
-
-  // Search Submit
-  useEffect(() => {
-    if (search) {
-      setIsLoading(loading => !loading);
-      setPageNo(1);
-      setGallery([]);
-      getGallery();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
 
   return (
     <div className="App">

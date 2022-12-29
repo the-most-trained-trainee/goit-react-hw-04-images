@@ -4,12 +4,7 @@ import PropTypes from 'prop-types';
 const Modal = ({ close, fullImage }) => {
   useEffect(() => {
     document.addEventListener('keydown', buttonClose);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     return () => document.removeEventListener('keydown', buttonClose);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buttonClose = e => {
