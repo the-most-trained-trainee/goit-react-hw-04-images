@@ -7,13 +7,17 @@ import getPhotos from './serverRequest';
 import { animateScroll as scroll } from 'react-scroll';
 import '../styles.css';
 
+const PHOTOS_PER_PAGE = 12;
+
 const App = () => {
   const [search, setSearch] = useState('');
   const [pageNo, setPageNo] = useState(1);
   const [gallery, setGallery] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadmore, setIsLoadmore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
+
+  const picsLeft = totalHits - pageNo * PHOTOS_PER_PAGE;
+  const showLoadMore = picsLeft > 0 && !isLoading;
 
   useEffect(() => {
     if (pageNo > 1) {
@@ -21,38 +25,21 @@ const App = () => {
     } else if (pageNo === 1) {
       scroll.scrollMore(10);
     }
-    // Load More Button
-    if (pageNo !== 1) {
-      setIsLoading(loading => !loading);
-      getGallery();
-    }
   }, [pageNo]);
 
-  // Load More Shown
-  useEffect(() => {
-    if (totalHits - pageNo * 12 > 0 && isLoading === false) {
-      setIsLoadmore(true);
-    } else {
-      setIsLoadmore(false);
-    }
-  }, [isLoading]);
+  const searchSubmit = request => {
+    getGallery(1, request);
+  };
 
-  // Search Submit
-  useEffect(() => {
-    if (search) {
-      setIsLoading(loading => !loading);
-      setPageNo(1);
-      setGallery([]);
-      getGallery();
-    }
-  }, [search]);
+  const loadMore = () => {
+    const nextPageNo = pageNo + 1;
+    getGallery(nextPageNo, search);
+  };
 
-  const searchSubmit = request => setSearch(request);
+  const getGallery = async (page, searchValue) => {
+    setIsLoading(true);
 
-  const loadMore = () => setPageNo(page => page + 1);
-
-  const getGallery = async () => {
-    const galleryReceived = await getPhotos(search, pageNo);
+    const galleryReceived = await getPhotos(searchValue, page, PHOTOS_PER_PAGE);
 
     if (galleryReceived.totalHits === 0) {
       setIsLoading(loading => !loading);
@@ -68,8 +55,16 @@ const App = () => {
       webformatURL: x.webformatURL,
     }));
 
-    setGallery(gallery => gallery.concat(resultingHits));
-    setIsLoading(loading => !loading);
+    setPageNo(page);
+
+    if (page === 1) {
+      setGallery(resultingHits);
+    } else {
+      setGallery(gallery => gallery.concat(resultingHits));
+    }
+
+    setIsLoading(false);
+    setSearch(searchValue);
   };
 
   return (
@@ -79,7 +74,7 @@ const App = () => {
       <div className="loading">
         <Loader loading={isLoading} />
       </div>
-      {isLoadmore && <Button onClick={loadMore} />}
+      {showLoadMore && <Button onClick={loadMore} />}
     </div>
   );
 };

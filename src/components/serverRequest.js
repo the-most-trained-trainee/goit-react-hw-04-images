@@ -1,13 +1,13 @@
 // export default const x = 
 
-const getPhotos = async (searchRequest, pageNumber) => {
+const getPhotos = async (searchRequest, pageNumber, photosOnPage = 12) => {
   const params = {
     key: '29078045-8c2db167d821a84d590b709ce',
     image_type: 'photo',
     orientation: 'horizontal',
     q: searchRequest,
     page: pageNumber,
-    per_page: 12,
+    per_page: photosOnPage,
   };
 
   const paramsInclude = new URLSearchParams([
