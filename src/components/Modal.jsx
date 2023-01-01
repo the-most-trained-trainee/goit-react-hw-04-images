@@ -7,6 +7,7 @@ const Modal = ({ close, fullImage }) => {
     return () => {
       document.removeEventListener('keydown', buttonClose);
     };
+    // eslint-disable-next-line
   }, []);
 
   const buttonClose = e => {
