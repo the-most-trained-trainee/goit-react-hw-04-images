@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 const Modal = ({ close, fullImage }) => {
   useEffect(() => {
     document.addEventListener('keydown', buttonClose);
-    return () => document.removeEventListener('keydown', buttonClose);
+    return () => {
+      document.removeEventListener('keydown', buttonClose);
+    };
   }, []);
 
   const buttonClose = e => {
