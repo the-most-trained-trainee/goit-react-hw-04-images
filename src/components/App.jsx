@@ -26,15 +26,26 @@ const App = () => {
       scroll.scrollMore(10);
     }
   }, [pageNo]);
-
   const searchSubmit = request => {
-    getGallery(1, request);
+    setSearch(request);
+    setPageNo(1);
   };
+  useEffect(() => {
+    if (!search) {
+      return;
+    }
+    setGallery([]);
+    getGallery(1, search);
+  }, [search]);
 
-  const loadMore = () => {
-    const nextPageNo = pageNo + 1;
-    getGallery(nextPageNo, search);
-  };
+  const loadMore = () => setPageNo(prev => prev + 1);
+
+  useEffect(() => {
+    if (!search || pageNo === 1) {
+      return;
+    }
+    getGallery(pageNo, search);
+  }, [pageNo, search]);
 
   const getGallery = async (page, searchValue) => {
     setIsLoading(true);
@@ -54,8 +65,6 @@ const App = () => {
       id: x.id,
       webformatURL: x.webformatURL,
     }));
-
-    setPageNo(page);
 
     if (page === 1) {
       setGallery(resultingHits);

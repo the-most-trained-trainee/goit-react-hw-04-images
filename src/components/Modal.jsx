@@ -1,19 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 const Modal = ({ close, fullImage }) => {
-  const buttonClose = e => {
-    if (e.key === 'Escape') {
-      close();
-    }
-  };
+  
+  const buttonClose = useCallback(
+    e => {
+      if (e.key === 'Escape') {
+        close();
+      }
+    },
+    [close]
+  );
 
   useEffect(() => {
     document.addEventListener('keydown', buttonClose);
     return () => {
       document.removeEventListener('keydown', buttonClose);
     };
-  });
+  }, [buttonClose]);
 
   return (
     <div
