@@ -2,19 +2,18 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const Modal = ({ close, fullImage }) => {
-  useEffect(() => {
-    document.addEventListener('keydown', buttonClose);
-    return () => {
-      document.removeEventListener('keydown', buttonClose);
-    };
-    // eslint-disable-next-line
-  }, []);
-
   const buttonClose = e => {
     if (e.key === 'Escape') {
       close();
     }
   };
+
+  useEffect(() => {
+    document.addEventListener('keydown', buttonClose);
+    return () => {
+      document.removeEventListener('keydown', buttonClose);
+    };
+  });
 
   return (
     <div
